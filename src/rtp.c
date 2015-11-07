@@ -2,12 +2,10 @@
 #define BIDIRECTIONAL 1
 
 /* Alternating Bit and Go-Back-N Network Emulation */
-
 // Character message data structure
 struct msg {
 	char data[20];
 };
-
 // Packet structure
 struct pkt {
 	int seqnum;
@@ -17,7 +15,6 @@ struct pkt {
 };
 
 /* Network Emulation */
-
 // Event structure
 struct event {
 	// Event time
@@ -33,7 +30,6 @@ struct event {
 	// Next event occured
 	struct event *next;
 };
-
 // Event list
 struct event *evlist = NULL;
 
@@ -45,7 +41,6 @@ struct event *evlist = NULL;
 #define ON 1
 #define A 0
 #define B 1
-
 // Trace for debug
 int TRACE = 1;
 // Number of message between layers
@@ -82,4 +77,46 @@ main() {
 	init();
 	A_inut();
 	B_init();
+}
+
+// Initialize function
+init() {
+	// Pointer variables
+	int i;
+	float sum, avg;
+	float jimsrand();
+	// Get user input
+	printf("-----  Stop and Wait Network Simulator Version -------- \n\n");
+    printf("Enter the number of messages to simulate: ");
+    scanf("%d", &nsimmax);
+    printf("Enter  packet loss probability [enter 0.0 for no loss]:");
+    scanf("%f", &lossprob);
+    printf("Enter packet corruption probability [0.0 for no corruption]:");
+    scanf("%f", &corruptprob);
+    printf("Enter average time between messages from sender's layer5 [ > 0.0]:");
+    scanf("%f", &lambda);
+    printf("Enter TRACE:");
+    scanf("%d", &TRACE);
+    // Random number generator
+    srand(9999);              
+    // Test random number generator
+    sum = 0.0;               
+    for(i = 0; i < 1000; i++) {
+    	sum=sum+jimsrand(); 
+    }
+    avg = sum/1000.0;
+    // Conditional print out to user
+    if(avg < 0.25 || avg > 0.75) {
+    printf("It is likely that random number generation on your machine\n" ); 
+    printf("is different from what this emulator expects.  Please take\n");
+    printf("a look at the routine jimsrand() in the emulator code. Sorry. \n");
+    exit();
+    }
+
+    // Initialize variables
+    ntolayer3 = 0;
+    nlost = 0;
+    ncorrupt = 0;
+    time = 0.0;
+    generate_next_arrival(); 
 }
