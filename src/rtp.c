@@ -131,3 +131,35 @@ float jimsrand() {
 	x = rand()/mmm;
 	return(x);
 }
+
+/* Event Handle Routines */
+// Next arrival function
+generate_next_arrival() {
+	// Pointer variables
+	double x, log(), ceil();
+	// Event pointer structure
+	struct event *evptr;
+	// Allocate memory 
+	char *malloc();
+	// Time variable
+	float ttime;
+	// Temporary int variable
+	int tempint;
+
+	if(TRACE > 2) {
+		printf("Generate Next Arrival: creating new arrival\n");
+	}
+	
+	// Initialize variables
+	x = lambda*jimsrand()*2;
+	evptr = (struct event *)malloc(sizeof(struct event));
+	evptr->evtime = time + x;
+	evptr->evtype = FROM_LAYER5;
+
+	if(BIDIRECTIONAL && (jimsrand() > 0.5)) {
+		evptr->eventity = B;
+	} else {
+		evptr->eventity = A;
+	}
+	insertevent(evptr);
+}
