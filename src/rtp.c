@@ -247,3 +247,28 @@ stoptimer(AorB) {
   	printf("Warning: unable to cancel your timer. It wasn't running.\n");
 	} 
 }
+
+// Start timer function
+int AorB;
+float increment;
+starttimer(AorB, increment) {
+	struct event *q;
+	struct event *evptr;
+	char *malloc();
+
+ 	if(TRACE > 2) {
+    	printf("          START TIMER: starting timer at %f\n",time);
+ 	}
+   	for(q = evlist; q != NULL ; q = q->next) {
+   		if((q->evtype == TIMER_INTERRUPT  && q->eventity == AorB) ) { 
+      		printf("Warning: attempt to start a timer that is already started\n");
+      		return;
+      	}
+   	}
+   	// Initialize event for timer  
+	evptr = (struct event *)malloc(sizeof(struct event));
+    evptr->evtime =  time + increment;
+    evptr->evtype =  TIMER_INTERRUPT;
+    evptr->eventity = AorB;
+   	insertevent(evptr);
+} 
