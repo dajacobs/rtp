@@ -120,3 +120,14 @@ init() {
     time = 0.0;
     generate_next_arrival(); 
 }
+
+// Random number function
+float jimsrand() {
+	// Largest int
+	double mmm = 2147483647;
+	// Pointer variable
+	float x;
+	// Initialize variable and return
+	x = rand()/mmm;
+	return(x);
+}
