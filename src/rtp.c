@@ -80,7 +80,7 @@ void insertevent(struct event *p);
 void printevlist(void);
 void starttimer(int AorB, float increment);
 void stoptimer(int AorB);
-void tolayer3(int AorB, struct pkt packet);
+void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
 
 /* Functions */
