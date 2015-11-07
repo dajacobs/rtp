@@ -173,12 +173,12 @@ insertevent(p) struct event *p; {
     }
 	q = evlist;   
 	// Empty list  
-   	if (q==NULL) {  
-    	evlist=p;
-    	p->next=NULL;
-    	p->prev=NULL;
+   	if (q == NULL) {  
+    	evlist = p;
+    	p->next = NULL;
+    	p->prev = NULL;
     } else {
-    	for(qold = q; q !=NULL && p->evtime > q->evtime; q = q->next) {
+    	for(qold = q; q != NULL && p->evtime > q->evtime; q = q->next) {
         	qold = q; 
     	}
     	// End of the list
@@ -188,16 +188,29 @@ insertevent(p) struct event *p; {
             p->next = NULL;
         // Front of list    
         } else if (q == evlist) { 
-        	p->next=evlist;
-            p->prev=NULL;
-            p->next->prev=p;
+        	p->next = evlist;
+            p->prev = NULL;
+            p->next->prev = p;
             evlist = p;
         // Middle of list    
         } else {
-        	p->next=q;
-            p->prev=q->prev;
-            q->prev->next=p;
-            q->prev=p;
+        	p->next = q;
+            p->prev = q->prev;
+            q->prev->next = p;
+            q->prev = p;
         }
     }
+}
+
+// Print event list function
+printevlist() {
+	// Event structure
+	struct event *q;
+	// Pointer variable
+  	int i;
+  	printf("--------------\nEvent List Follows:\n");
+  	for(q = evlist; q!=NULL; q=q->next) {
+    	printf("Event time: %f, type: %d entity: %d\n",q->evtime,q->evtype,q->eventity);
+    }
+  	printf("--------------\n");
 }
