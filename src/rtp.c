@@ -163,3 +163,41 @@ generate_next_arrival() {
 	}
 	insertevent(evptr);
 }
+
+insertevent(p) struct event *p; {
+	// Event structure
+	struct event *q, *qold;
+	if(TRACE > 2) {
+    	printf("INSERTEVENT: time is %lf\n", time);
+    	printf("INSERTEVENT: future time will be %lf\n", p->evtime); 
+    }
+	q = evlist;   
+	// Empty list  
+   	if (q==NULL) {  
+    	evlist=p;
+    	p->next=NULL;
+    	p->prev=NULL;
+    } else {
+    	for(qold = q; q !=NULL && p->evtime > q->evtime; q = q->next) {
+        	qold = q; 
+    	}
+    	// End of the list
+        if(q == NULL) {
+        	qold->next = p;
+            p->prev = qold;
+            p->next = NULL;
+        // Front of list    
+        } else if (q == evlist) { 
+        	p->next=evlist;
+            p->prev=NULL;
+            p->next->prev=p;
+            evlist = p;
+        // Middle of list    
+        } else {
+        	p->next=q;
+            p->prev=q->prev;
+            q->prev->next=p;
+            q->prev=p;
+        }
+    }
+}
