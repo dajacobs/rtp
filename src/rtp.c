@@ -1,21 +1,29 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define BIDIRECTIONAL 1
+#define TIMER_INTERRUPT 0
+#define FROM_LAYER5 1
+#define FROM_LAYER3 2
+#define OFF 0
+#define ON 1
+#define A 0
+#define B 1
 
-/* Alternating Bit and Go-Back-N Network Emulation */
-// Character message data structure
+/* Structures */
+
+// Message 
 struct msg {
 	char data[20];
 };
-// Packet structure
+// Packet
 struct pkt {
 	int seqnum;
 	int acknum;
 	int checksum;
 	char payload[20];
 };
-
-/* Network Emulation */
-// Event structure
+// Event 
 struct event {
 	// Event time
 	float evtime;
@@ -30,17 +38,13 @@ struct event {
 	// Next event occured
 	struct event *next;
 };
-// Event list
+// Initialize structures
 struct event *evlist = NULL;
+struct pkt *packet;
+struct event *p;
 
-// Possible event occurences
-#define TIMER_INTERRUPT 0
-#define FROM_LAYER5 1
-#define FROM_LAYER3 2
-#define OFF 0
-#define ON 1
-#define A 0
-#define B 1
+/* Variables */
+
 // Trace for debug
 int TRACE = 1;
 // Number of message between layers
@@ -61,26 +65,28 @@ int ntolayer3;
 int nlost;
 // Number corrupted by media
 int ncorrupt;
+// Pointer a or b
+int AorB;
+// Data sent 
+char datasent[20];
+// Increment
+float increment;
 
-// Main function
-main() {
-	// Event pointer structure
-	struct event *eventptr;
-	// Message to give structure
-	struct msg msg2give;
-	// Packet to give structure
-	struct pkt pkt2give;
-	// Pointer variables
-	int i,j;
-	char c;
-	// Initialize functions
-	init();
-	A_inut();
-	B_init();
-}
+// Prototypes
+void init(void);
+float jimsrand(void);
+void generate_next_arrival(void);
+void insertevent(struct event *p);
+void printevlist(void);
+void starttimer(int AorB, float increment);
+void stoptimer(int AorB);
+void tolayer3(int AorB, struct pkt packet);
+void tolayer5(int AorB, char datasent[]);
 
-// Initialize function
-init() {
+/* Functions */
+
+// Initialize
+void init(void) {
 	// Pointer variables
 	int i;
 	float sum, avg;
@@ -110,9 +116,8 @@ init() {
     printf("It is likely that random number generation on your machine\n" ); 
     printf("is different from what this emulator expects.  Please take\n");
     printf("a look at the routine jimsrand() in the emulator code. Sorry. \n");
-    exit();
+    exit(EXIT_FAILURE);
     }
-
     // Initialize variables
     ntolayer3 = 0;
     nlost = 0;
@@ -120,9 +125,8 @@ init() {
     time = 0.0;
     generate_next_arrival(); 
 }
-
-// Random number function
-float jimsrand() {
+// Random number
+float jimsrand(void) {
 	// Largest int
 	double mmm = 2147483647;
 	// Pointer variable
@@ -131,31 +135,24 @@ float jimsrand() {
 	x = rand()/mmm;
 	return(x);
 }
-
-/* Event Handle Routines */
-// Next arrival function
-generate_next_arrival() {
+// Generate next arrival
+void generate_next_arrival(void) {
 	// Pointer variables
 	double x, log(), ceil();
 	// Event pointer structure
 	struct event *evptr;
-	// Allocate memory 
-	char *malloc();
 	// Time variable
 	float ttime;
 	// Temporary int variable
 	int tempint;
-
 	if(TRACE > 2) {
 		printf("Generate Next Arrival: creating new arrival\n");
 	}
-	
 	// Initialize variables
 	x = lambda*jimsrand()*2;
-	evptr = (struct event *)malloc(sizeof(struct event));
+	evptr = (struct event*)malloc(sizeof(struct event));
 	evptr->evtime = time + x;
 	evptr->evtype = FROM_LAYER5;
-
 	if(BIDIRECTIONAL && (jimsrand() > 0.5)) {
 		evptr->eventity = B;
 	} else {
@@ -163,9 +160,8 @@ generate_next_arrival() {
 	}
 	insertevent(evptr);
 }
-
-struct event *p;
-struct insertevent(p) {
+// Insert event
+void insertevent(struct event *) {
 	// Event structure
 	struct event *q, *qold;
 	if(TRACE > 2) {
@@ -181,7 +177,7 @@ struct insertevent(p) {
     	p->prev = NULL;
     } else {
     	for(qold = q; q != NULL && p->evtime > q->evtime; q = q->next) {
-        	qold=q; 
+        	qold = q; 
     	}
     	// End of list
         if(q == NULL) {
@@ -203,9 +199,8 @@ struct insertevent(p) {
         }
     }
 }
-
-// Print event list function
-printevlist() {
+// Print event list
+void printevlist(void) {
 	// Event structure
 	struct event *q;
 	// Pointer variable
@@ -216,10 +211,28 @@ printevlist() {
     }
   	printf("--------------\n");
 }
-
-// Stop timer function
-int AorB;
-stoptimer(AorB) {
+// Start timer
+void starttimer(int AorB, float increment) {
+	struct event *q;
+	struct event *evptr;
+ 	if(TRACE > 2) {
+    	printf("          START TIMER: starting timer at %f\n",time);
+ 	}
+   	for(q = evlist; q != NULL ; q = q->next) {
+   		if((q->evtype == TIMER_INTERRUPT  && q->eventity == AorB) ) { 
+      		printf("Warning: attempt to start a timer that is already started\n");
+      		return;
+      	}
+   	}
+   	// Initialize event for timer  
+	evptr = (struct event *)malloc(sizeof(struct event));
+    evptr->evtime =  time + increment;
+    evptr->evtype =  TIMER_INTERRUPT;
+    evptr->eventity = AorB;
+   	insertevent(evptr);
+}
+// Stop timer
+void stoptimer(int AorB) {
 	struct event *q,*qold;
 	if(TRACE > 2) {
 		printf("STOP TIMER: stopping timer at %f\n", time);
@@ -247,28 +260,93 @@ stoptimer(AorB) {
   	printf("Warning: unable to cancel your timer. It wasn't running.\n");
 	} 
 }
-
-// Start timer function
-int AorB;
-float increment;
-starttimer(AorB, increment) {
-	struct event *q;
-	struct event *evptr;
-	char *malloc();
-
- 	if(TRACE > 2) {
-    	printf("          START TIMER: starting timer at %f\n",time);
+// Layer three
+void tolayer3(int AorB, struct pkt packet) {
+	struct pkt *mypktptr;
+ 	struct event *evptr,*q;
+ 	float lastime, x, jimsrand();
+ 	int i;
+	ntolayer3++;
+	// Simulate loss
+ 	if(jimsrand() < lossprob) {
+    	  nlost++;
+    	if(TRACE > 0) {
+    		printf("TOLAYER3: packet being lost\n");
+    	}    
+		return;
+    }  
+    // Copy packet pointer
+ 	mypktptr = (struct pkt *)malloc(sizeof(struct pkt));
+ 	mypktptr->seqnum = packet.seqnum;
+ 	mypktptr->acknum = packet.acknum;
+ 	mypktptr->checksum = packet.checksum;
+ 	for (i = 0; i < 20; i++) {
+ 		mypktptr->payload[i] = packet.payload[i];
  	}
-   	for(q = evlist; q != NULL ; q = q->next) {
-   		if((q->evtype == TIMER_INTERRUPT  && q->eventity == AorB) ) { 
-      		printf("Warning: attempt to start a timer that is already started\n");
-      		return;
-      	}
-   	}
-   	// Initialize event for timer  
-	evptr = (struct event *)malloc(sizeof(struct event));
-    evptr->evtime =  time + increment;
-    evptr->evtype =  TIMER_INTERRUPT;
-    evptr->eventity = AorB;
-   	insertevent(evptr);
+ 	if (TRACE>2)  {
+   		printf("TOLAYER3: seq: %d, ack %d, check: %d ", mypktptr->seqnum,
+	  	mypktptr->acknum,  mypktptr->checksum);
+    	for (i = 0; i < 20; i++) {
+    		printf("%c",mypktptr->payload[i]);
+    	}
+        printf("\n");
+   }
+   	// Future event initialize
+ 	evptr = (struct event *)malloc(sizeof(struct event));
+  	evptr->evtype =  FROM_LAYER3; 
+  	evptr->eventity = (AorB+1) % 2;
+  	evptr->pktptr = mypktptr;      
+ 	lastime = time;
+ 	// Compute arrival time of packet
+ 	for(q = evlist; q != NULL ; q = q->next) {
+    	if((q->evtype == FROM_LAYER3  && q->eventity == evptr->eventity)) {
+    		lastime = q->evtime;
+    	} 
+    }
+ 	evptr->evtime =  lastime + 1 + 9*jimsrand();
+ 	// Simulate corruption 
+	if(jimsrand() < corruptprob) {
+		ncorrupt++;
+		if((x = jimsrand()) < .75) {
+			mypktptr->payload[0] = 'Z';
+		} else if(x < .875) {
+			mypktptr->seqnum = 999999;
+		} else {
+	       mypktptr->acknum = 999999;
+		}
+	    if(TRACE > 0) {
+	    	printf("TOLAYER3: packet being corrupted\n");
+	    }   
+	}
+	if(TRACE > 2) {
+		printf("TOLAYER3: scheduling arrival on other side\n");
+	}  
+	insertevent(evptr);
 } 
+// Layer five
+void tolayer5(int AorB, char datasent[]) {
+	int i;  
+	if (TRACE > 2) {
+    	printf("TOLAYER5: data received: ");
+    	for (i = 0; i < 20; i++) {
+    		printf("%c", datasent[i]);		
+    	}  
+    	printf("\n");
+   }
+} 
+// Main
+main(void) {
+	// Event pointer structure
+	struct event *eventptr;
+	// Message to give structure
+	struct msg msg2give;
+	// Packet to give structure
+	struct pkt pkt2give;
+	// Pointer variables
+	int i,j;
+	char c;
+	// Initialize functions
+	init();
+	A_inut();
+	B_init();
+}
