@@ -66,3 +66,20 @@ int ntolayer3;
 int nlost;
 // Number corrupted by media
 int ncorrupt;
+
+// Main function
+main() {
+	// Event pointer structure
+	struct event *eventptr;
+	// Message to give structure
+	struct msg msg2give;
+	// Packet to give structure
+	struct pkt pkt2give;
+	// Pointer variables
+	int i,j;
+	char c;
+	// Initialize functions
+	init();
+	A_inut();
+	B_init();
+}
