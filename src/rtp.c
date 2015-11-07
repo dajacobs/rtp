@@ -216,3 +216,34 @@ printevlist() {
     }
   	printf("--------------\n");
 }
+
+// Stop timer function
+int AorB;
+stoptimer(AorB) {
+	struct event *q,*qold;
+	if(TRACE > 2) {
+		printf("STOP TIMER: stopping timer at %f\n", time);
+	}
+	for(q = evlist; q != NULL ; q = q->next) {
+		if((q->evtype == TIMER_INTERRUPT  && q->eventity == AorB)) { 
+       		// Remove first event
+       		if(q->next == NULL && q->prev == NULL) {
+             	evlist = NULL;
+            // End of list 	
+       		} else if (q->next == NULL) {
+            	q->prev->next = NULL;
+       		// Front of list
+       		} else if (q == evlist) {
+            	q->next->prev = NULL;
+             	evlist = q->next;
+            // Middle of the list
+            } else {
+            	q->next->prev = q->prev;
+            	q->prev->next =  q->next;
+            }
+    		free(q);
+      		return;
+    	}
+  	printf("Warning: unable to cancel your timer. It wasn't running.\n");
+	} 
+}
