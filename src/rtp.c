@@ -71,6 +71,8 @@ int AorB;
 char datasent[20];
 // Increment
 float increment;
+// Packet number
+int pktNum = 1;
 
 // Prototypes
 void init(void);
@@ -84,8 +86,10 @@ void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
 void setPkt(struct pkt packt);
 int setAck(void);
+void setPktNum(void);
 struct pkt getPkt(void);
 int getAck(void);
+int getPktNum(void);
 void A_input(struct pkt packt);
 void A_timerinterrupt(void);
 
@@ -352,6 +356,14 @@ int setAck(void) {
 		return packet.acknum = packet.acknum + 1;
 	}
 }
+// Set packet number
+void setPktNum(void) {
+	if(pktNum) {
+		pktNum = pktNum - 1;
+	} else {
+		pktNum = pktNum + 1;
+	}
+}
 // Get packet
 struct pkt getPkt(void) {
 	return packet;
@@ -359,6 +371,10 @@ struct pkt getPkt(void) {
 // Get ack
 int getAck(void) {
 	return packet.acknum;
+}
+// Get packet number
+int getPktNum(void) {
+	return pktNum;
 }
 // Input A
 void A_input(struct pkt packt) {
