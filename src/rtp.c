@@ -9,8 +9,6 @@
 #define ON 1
 #define A 0
 #define B 1
-#define ACK = 0;
-#define SEQ = 0;
 
 /* Structures */
 
@@ -43,7 +41,7 @@ struct event {
 // Initialize structures
 struct event *evlist = NULL;
 struct pkt packet;
-struct event *p;
+struct event p;
 
 /* Variables */
 
@@ -78,13 +76,14 @@ float increment;
 void init(void);
 float jimsrand(void);
 void generate_next_arrival(void);
-void insertevent(struct event *p);
+void insertevent(struct event *);
 void printevlist(void);
 void starttimer(int AorB, float increment);
 void stoptimer(int AorB);
 void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
-void A_init(void);
+void setPkt(struct pkt packt);
+struct pkt getPkt(void);
 
 /* Functions */
 
@@ -164,7 +163,7 @@ void generate_next_arrival(void) {
 	insertevent(evptr);
 }
 // Insert event
-void insertevent(struct event *) {
+void insertevent(struct event *p) {
 	// Event structure
 	struct event *q, *qold;
 	if(TRACE > 2) {
@@ -342,9 +341,10 @@ void setPkt(struct pkt packt) {
 	packet = packt;
 }
 // Get packet
-struct pkt getPkt() {
+struct pkt getPkt(void) {
 	return packet;
 }
+
 // Main
 main(void) {
 	// Event pointer structure
