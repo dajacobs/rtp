@@ -83,7 +83,10 @@ void stoptimer(int AorB);
 void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
 void setPkt(struct pkt packt);
+int setAck(void);
 struct pkt getPkt(void);
+int getAck(void);
+void A_input(struct pkt packt);
 
 /* Functions */
 
@@ -356,7 +359,7 @@ struct pkt getPkt(void) {
 int getAck(void) {
 	return packet.acknum;
 }
-// Input for A
+// Input A
 void A_input(struct pkt packt) {
 	if(packt.acknum == getAck()) {
 		stoptimer(0);
@@ -366,6 +369,11 @@ void A_input(struct pkt packt) {
 		starttimer(0, 20);
 		tolayer3(0, getPkt());
 	}
+}
+// Timer interrupt A
+void A_timerinterrupt() {
+	starttimer(0, 20);
+	tolayer3(0, getPkt());
 }
 // Main
 main(void) {
