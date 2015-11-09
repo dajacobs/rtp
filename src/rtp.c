@@ -340,11 +340,18 @@ void tolayer5(int AorB, char datasent[]) {
 void setPkt(struct pkt packt) {
 	packet = packt;
 }
+// Set ack
+void setAck(int aNum) {
+	packet.acknum = aNum;
+}
 // Get packet
 struct pkt getPkt(void) {
 	return packet;
 }
-
+// Get ack
+int getAck(void) {
+	return packet.acknum;
+}
 // Main
 main(void) {
 	// Event pointer structure
