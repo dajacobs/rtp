@@ -87,6 +87,7 @@ int setAck(void);
 struct pkt getPkt(void);
 int getAck(void);
 void A_input(struct pkt packt);
+void A_timerinterrupt(void);
 
 /* Functions */
 
@@ -371,7 +372,7 @@ void A_input(struct pkt packt) {
 	}
 }
 // Timer interrupt A
-void A_timerinterrupt() {
+void A_timerinterrupt(void) {
 	starttimer(0, 20);
 	tolayer3(0, getPkt());
 }
