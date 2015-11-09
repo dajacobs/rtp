@@ -9,6 +9,8 @@
 #define ON 1
 #define A 0
 #define B 1
+#define ACK = 0;
+#define SEQ = 0;
 
 /* Structures */
 
@@ -40,7 +42,7 @@ struct event {
 };
 // Initialize structures
 struct event *evlist = NULL;
-struct pkt *packet;
+struct pkt packet;
 struct event *p;
 
 /* Variables */
@@ -82,6 +84,7 @@ void starttimer(int AorB, float increment);
 void stoptimer(int AorB);
 void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
+void A_init(void);
 
 /* Functions */
 
@@ -333,7 +336,15 @@ void tolayer5(int AorB, char datasent[]) {
     	}  
     	printf("\n");
    }
-} 
+}
+// Set packet
+void setPkt(struct pkt packt) {
+	packet = packt;
+}
+// Get packet
+struct pkt getPkt() {
+	return packet;
+}
 // Main
 main(void) {
 	// Event pointer structure
@@ -347,6 +358,6 @@ main(void) {
 	char c;
 	// Initialize functions
 	init();
-	A_inut();
-	B_init();
+	//A_inut();
+	//B_init();
 }
