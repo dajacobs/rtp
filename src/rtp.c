@@ -94,6 +94,7 @@ struct pkt getPkt(void);
 int getAck(void);
 int getPktNum(void);
 void A_input(struct pkt packt);
+void A_output(struct msg messag);
 void A_timerinterrupt(void);
 
 /* Functions */
@@ -348,19 +349,19 @@ void tolayer5(int AorB, char datasent[]) {
    }
 }
 // Make packet
-struct pkt makePkt(char *message, int numb) {
+struct pkt makePkt(char *messag, int numb) {
 	struct pkt packt;
-	strncpy(packt.payload, message, sizeof(m));
+	strncpy(packt.payload, messag, sizeof(m));
 	packet.seqnum = numb;
 	packet.acknum = numb;
-	packet.checksum = calcChkSum(numb, numb, message);
+	packet.checksum = calcChkSum(numb, numb, messag);
 	return packt;
 }
 // Check sum value
-int calcChkSum(int seqNumb, int ackNumb, char message[]) {
+int calcChkSum(int seqNumb, int ackNumb, char messag[]) {
 	int i = 0, c = 0;
 	while(i < sizeof(m)) {
-		c += (int)message[i];
+		c += (int)messag[i];
 		i++;
 	}
 	return seqNumb + ackNumb + c;
@@ -407,6 +408,14 @@ void A_input(struct pkt packt) {
 		starttimer(0, 20);
 		tolayer3(0, getPkt());
 	}
+}
+// Output A
+void A_output(struct msg messag) {
+	setPktNum();
+	starttimer(0, 20);
+	struct pkt packt = makePkt(messag.data, getPktNum());
+	setPkt(packt);
+	tolayer3(0, packt);
 }
 // Timer interrupt A
 void A_timerinterrupt(void) {
