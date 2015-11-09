@@ -42,6 +42,7 @@ struct event {
 struct event *evlist = NULL;
 struct pkt packet;
 struct event p;
+struct msg m;
 
 /* Variables */
 
@@ -84,6 +85,7 @@ void starttimer(int AorB, float increment);
 void stoptimer(int AorB);
 void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
+struct pkt makePkt(char *message, int numb);
 int calcChkSum(int seqNumb, int ackNumb, char message[]);
 void setPkt(struct pkt packt);
 int setAck(void);
@@ -345,10 +347,19 @@ void tolayer5(int AorB, char datasent[]) {
     	printf("\n");
    }
 }
+// Make packet
+struct pkt makePkt(char *message, int numb) {
+	struct pkt packt;
+	strncpy(packt.payload, message, sizeof(m));
+	packet.seqnum = numb;
+	packet.acknum = numb;
+	packet.checksum = calcChkSum(numb, numb, message);
+	return packt;
+}
 // Check sum value
 int calcChkSum(int seqNumb, int ackNumb, char message[]) {
 	int i = 0, c = 0;
-	while(i < sizeof(msg.data)) {
+	while(i < sizeof(m)) {
 		c += (int)message[i];
 		i++;
 	}
