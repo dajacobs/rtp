@@ -84,6 +84,7 @@ void starttimer(int AorB, float increment);
 void stoptimer(int AorB);
 void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
+int calcChkSum(int seqNumb, int ackNumb, char message[]);
 void setPkt(struct pkt packt);
 int setAck(void);
 void setPktNum(void);
@@ -343,6 +344,15 @@ void tolayer5(int AorB, char datasent[]) {
     	}  
     	printf("\n");
    }
+}
+// Check sum value
+int calcChkSum(int seqNumb, int ackNumb, char message[]) {
+	int i = 0, c = 0;
+	while(i < sizeof(msg.data)) {
+		c += (int)message[i];
+		i++;
+	}
+	return seqNumb + ackNumb + c;
 }
 // Set packet
 void setPkt(struct pkt packt) {
