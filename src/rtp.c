@@ -431,6 +431,18 @@ void A_timerinterrupt(void) {
 	starttimer(0, 20);
 	tolayer3(0, getPkt());
 }
+// Init A
+void A_init(void) {
+	struct pkt packt;
+	char messag[20];
+	if(packt.checksum == calcChkSum(packt.seqnum, packt.acknum, packt.payload) && packt.acknum == getAck()) {
+		strncpy(messag, packt.payload, 20);
+		tolayer5(1, messag);
+		tolayer3(1, makePkt(datasent, getAck()));
+	} else {
+		tolayer3(1, makePkt(datasent, getNxtAck(packt.acknum)));
+	}
+}
 // Main
 main(void) {
 	// Event pointer structure
@@ -444,6 +456,6 @@ main(void) {
 	char c;
 	// Initialize functions
 	init();
-	//A_inut();
+	A_init();
 	//B_init();
 }
