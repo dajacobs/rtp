@@ -341,8 +341,12 @@ void setPkt(struct pkt packt) {
 	packet = packt;
 }
 // Set ack
-void setAck(int aNum) {
-	packet.acknum = aNum;
+int setAck(void) {
+	if(packet.acknum) {
+		return packet.acknum = packet.acknum - 1;
+	} else {
+		return packet.acknum = packet.acknum + 1;
+	}
 }
 // Get packet
 struct pkt getPkt(void) {
@@ -351,6 +355,17 @@ struct pkt getPkt(void) {
 // Get ack
 int getAck(void) {
 	return packet.acknum;
+}
+// Input for A
+void A_input(struct pkt packt) {
+	if(packt.acknum == getAck()) {
+		stoptimer(0);
+		setAck();
+	} else {
+		stoptimer(0);
+		starttimer(0, 20);
+		tolayer3(0, getPkt());
+	}
 }
 // Main
 main(void) {
