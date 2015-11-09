@@ -97,6 +97,7 @@ int getNxtAck(int ack);
 void A_input(struct pkt packt);
 void A_output(struct msg messag);
 void A_timerinterrupt(void);
+void A_init(void);
 
 /* Functions */
 
