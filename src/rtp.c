@@ -93,6 +93,7 @@ void setPktNum(void);
 struct pkt getPkt(void);
 int getAck(void);
 int getPktNum(void);
+int getNxtAck(int ack);
 void A_input(struct pkt packt);
 void A_output(struct msg messag);
 void A_timerinterrupt(void);
@@ -397,6 +398,14 @@ int getAck(void) {
 // Get packet number
 int getPktNum(void) {
 	return pktNum;
+}
+// Get next ack
+int getNxtAck(int ack) {
+	if(packet.acknum) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 // Input A
 void A_input(struct pkt packt) {
