@@ -463,7 +463,7 @@ void A_init(void) {
 // Input B
 void B_input(struct pkt packt) {
 	if(isCorrupt(&packt) == 0) {
-		tolayer5(1, getPkt());
+		tolayer5(1, packt.payload);
 		tolayer3(1, getPkt());
 	} else {
 		tolayer3(1, getPkt());
