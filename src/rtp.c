@@ -87,6 +87,7 @@ void tolayer3(int AorB, struct pkt *packet);
 void tolayer5(int AorB, char datasent[]);
 struct pkt makePkt(char *message, int numb);
 int calcChkSum(int seqNumb, int ackNumb, char message[]);
+int isCorrupt(struct pkt *packt);
 void setPkt(struct pkt packt);
 int setAck(void);
 void setPktNum(void);
@@ -367,6 +368,21 @@ int calcChkSum(int seqNumb, int ackNumb, char messag[]) {
 		i++;
 	}
 	return seqNumb + ackNumb + c;
+}
+// Corrupt packet checker
+int isCorrupt(struct pkt *packt) {
+	int i;
+	int tmpChkSum = 0;
+	tmpChkSum += packt->seqnum;
+	tmpChkSum += packt->acknum;
+	for(i = 0; i < 20; i++) {
+		tmpChkSum += packt->payload[i];
+	}
+	if(tmpChkSum != packt->checksum) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 // Set packet
 void setPkt(struct pkt packt) {
