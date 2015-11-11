@@ -99,6 +99,8 @@ void A_input(struct pkt packt);
 void A_output(struct msg messag);
 void A_timerinterrupt(void);
 void A_init(void);
+void B_input(struct pkt packt);
+void B_init(void);
 
 /* Functions */
 
@@ -473,6 +475,14 @@ void B_input(struct pkt packt) {
 		tolayer3(1, getPkt());
 	}
 }
+// Init B 
+void B_init(void) {
+	char messag[20];
+	for(int i = 0; i < 20; i++) {
+		messag[i] = 0;
+	}
+	makePkt(messag, 0);
+}
 // Main
 main(void) {
 	// Event pointer structure
@@ -487,5 +497,5 @@ main(void) {
 	// Initialize functions
 	init();
 	A_init();
-	//B_init();
+	B_init();
 }
