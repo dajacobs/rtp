@@ -460,6 +460,15 @@ void A_init(void) {
 		tolayer3(1, makePkt(datasent, getNxtAck(packt.acknum)));
 	}
 }
+// Input B
+void B_input(struct pkt packt) {
+	if(isCorrupt(&packt) == 0) {
+		tolayer5(1, getPkt());
+		tolayer3(1, getPkt());
+	} else {
+		tolayer3(1, getPkt());
+	}
+}
 // Main
 main(void) {
 	// Event pointer structure
