@@ -523,6 +523,32 @@ main(void) {
 			printf(" entity: %d\n", eventptr->eventity);
 		}
 		time = eventptr->evtime;
+		// Next events time
+		if(nsim == nsimmax) {
+			break;
+		}
+		if(eventptr->evtype == FROM_LAYER5) {
+			// Initiate arrival
+			generate_next_arrival();
+			// Fill in message
+			j = nsim % 26;
+			for(i = 0; i < 20; i++) {
+				msg2give.data[i] = 97 + j;
+			}
+			if(TRACE > 2) {
+				printf("Main data given to student: ");
+				for(i = 0; i < 20; i++) {
+					printf("%c", msg2give.data[i]);
+				}
+				printf("\n");
+			}
+			nsim++;
+			if(eventptr->eventity == A) {
+				A_output(msg2give);
+			} else {
+				//B_output(msg2give);
+			}
+		}
 	}
 terminate: 
 	printf("Simulation terminated at %f\n after sending %d messages from layer5\n", time, nsim); 
