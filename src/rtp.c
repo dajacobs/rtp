@@ -498,4 +498,32 @@ main(void) {
 	init();
 	A_init();
 	B_init();
+
+	while(1) {
+		// Simulate next event
+		eventptr = evlist;
+		if(eventptr == NULL) {
+			goto terminate;
+		}
+		// Remove event from list
+		evlist = evlist->next;
+		if(evlist != NULL) {
+			evlist->prev=NULL;
+		}
+		if(TRACE >= 2) {
+			printf("\nEvent time: %f", eventptr->evtime);
+			printf(" type: %d", eventptr->evtype);
+			if(eventptr->evtype == 0) {
+				printf(", timerinterrupt ");
+			} else if(eventptr->evtype == 1) {
+				printf(", fromlayer5 ");
+			} else {
+				printf(", fromlayer3 ");
+			}
+			printf(" entity: %d\n", eventptr->eventity);
+		}
+		time = eventptr->evtime;
+	}
+terminate: 
+	printf("Simulation terminated at %f\n after sending %d messages from layer5\n", time, nsim); 
 }
