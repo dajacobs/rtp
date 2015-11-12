@@ -100,6 +100,7 @@ void A_output(struct msg messag);
 void A_timerinterrupt(void);
 void A_init(void);
 void B_input(struct pkt packt);
+void B_output(struct msg messag);
 void B_timerinterrupt(void);
 void B_init(void);
 
@@ -476,6 +477,14 @@ void B_input(struct pkt packt) {
 		tolayer3(1, getPkt());
 	}
 }
+// Output B
+void B_output(struct msg messag) {
+	setPktNum();
+	starttimer(0, 20);
+	struct pkt packt = makePkt(messag.data, getPktNum());
+	setPkt(packt);
+	tolayer5(0, packt.payload);
+}
 // Timer interrupt B
 void B_timerinterrupt(void) {
 	starttimer(0, 20);
@@ -565,7 +574,7 @@ main(void) {
 			if(eventptr->eventity == A) {
 				A_output(msg2give);
 			} else {
-				//B_output(pkt2give);
+				B_output(msg2give);
 			}
 			// Free-up memory
 			free(eventptr->pktptr);
