@@ -548,7 +548,31 @@ main(void) {
 			} else {
 				//B_output(msg2give);
 			}
+		} else if(eventptr->evtype == FROM_LAYER3) {
+			pkt2give.seqnum = eventptr->pktptr->seqnum;
+			pkt2give.acknum = eventptr->pktptr->acknum;
+			pkt2give.checksum = eventptr->pktptr->checksum;
+			for(i = 0; i < 20; i++) {
+				pkt2give.payload[i] = eventptr->pktptr->payload[i];
+			}
+			// Send packet
+			if(eventptr->eventity == A) {
+				A_output(msg2give);
+			} else {
+				//B_output(pkt2give);
+			}
+			// Free-up memory
+			free(eventptr->pktptr);
+		} else if(eventptr->evtype == TIMER_INTERRUPT) {
+			if(eventptr->eventity == A) {
+				A_timerinterrupt();
+			} else {
+				//B_timerinterrupt();
+			}
+		} else {
+			printf("Event type is unknown\n");
 		}
+		free(eventptr);
 	}
 terminate: 
 	printf("Simulation terminated at %f\n after sending %d messages from layer5\n", time, nsim); 
