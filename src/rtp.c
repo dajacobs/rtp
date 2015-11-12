@@ -100,6 +100,7 @@ void A_output(struct msg messag);
 void A_timerinterrupt(void);
 void A_init(void);
 void B_input(struct pkt packt);
+void B_timerinterrupt(void);
 void B_init(void);
 
 /* Functions */
@@ -475,6 +476,11 @@ void B_input(struct pkt packt) {
 		tolayer3(1, getPkt());
 	}
 }
+// Timer interrupt B
+void B_timerinterrupt(void) {
+	starttimer(0, 20);
+	tolayer5(0, getPkt().payload);
+}
 // Init B 
 void B_init(void) {
 	char messag[20];
@@ -567,7 +573,7 @@ main(void) {
 			if(eventptr->eventity == A) {
 				A_timerinterrupt();
 			} else {
-				//B_timerinterrupt();
+				B_timerinterrupt();
 			}
 		} else {
 			printf("Event type is unknown\n");
