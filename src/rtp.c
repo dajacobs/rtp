@@ -499,7 +499,7 @@ void B_init(void) {
 	makePkt(messag, 0);
 }
 // Main
-main(void) {
+main() {
 	// Event pointer structure
 	struct event *eventptr;
 	// Message to give structure
@@ -561,7 +561,7 @@ main(void) {
 			if(eventptr->eventity == A) {
 				A_output(msg2give);
 			} else {
-				//B_output(msg2give);
+				B_output(msg2give);
 			}
 		} else if(eventptr->evtype == FROM_LAYER3) {
 			pkt2give.seqnum = eventptr->pktptr->seqnum;
@@ -572,9 +572,9 @@ main(void) {
 			}
 			// Send packet
 			if(eventptr->eventity == A) {
-				A_output(msg2give);
+				A_input(pkt2give);
 			} else {
-				B_output(msg2give);
+				B_input(pkt2give);
 			}
 			// Free-up memory
 			free(eventptr->pktptr);
